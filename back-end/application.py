@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 db = SQLAlchemy(app)
@@ -19,6 +22,7 @@ def errorMessageWithCode(status, code):
     return {"status": status}, code
 
 @app.route("/createinventory", methods=["POST"])
+@cross_origin()
 def createInventoryItem():
     if "name" not in request.json:
         return errorMessageWithCode("There was no item name given.", 400)
@@ -35,7 +39,8 @@ def createInventoryItem():
     db.session.add(item)
     db.session.commit()
 
-    return {"id": item.id}
+    response = {"id": item.id}
+    return response
 
 @app.route("/editinventory/<itemid>", methods=["PUT"])
 def editInventoryItem(itemid):
@@ -71,5 +76,4 @@ def getItems():
         output.append({"id": item.id, "name": item.name, "description": item.description})
 
     response = jsonify(output)
-    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
