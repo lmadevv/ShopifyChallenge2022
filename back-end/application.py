@@ -39,7 +39,7 @@ def createInventoryItem():
 
 @app.route("/editinventory/<itemid>", methods=["PUT"])
 def editInventoryItem(itemid):
-    item = InventoryItem.query.get(itemid)
+    item = InventoryItem.query.get_or_404(itemid)
 
     if "name" in request.json:
         if request.json["name"] != "":

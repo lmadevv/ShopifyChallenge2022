@@ -86,3 +86,8 @@ class EditInventoryItem(BaseTestCase):
 
         assert response.status_code == 400
         assert response.json["status"] == "Please fill in name field if you plan to change it."
+
+    def testInvalidItemToEdit(self):
+        response = self.client.put("/editinventory/1", json=dict(name="Toilet Paper", description="To wipe"))
+
+        assert response.status_code == 404
