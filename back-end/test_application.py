@@ -106,3 +106,22 @@ class DeleteInventoryItem(BaseTestCase):
         response = self.client.delete("/deleteinventory/1")
 
         assert response.status_code == 404
+
+class GetInventoryItems(BaseTestCase):
+    def testGetPopulatedItems(self):
+        db.session.add(self.createInventory())
+        db.session.commit()
+
+        response = self.client.get("/getinventory")
+
+        assert response.status_code == 200
+        assert isinstance(response.json, list)
+        assert len(response.json) == 1
+        assert 1 == response.json[0]
+
+    def testGetUnpopulatedItems(self):
+        response = self.client.get("/getinventory")
+
+        assert response.status_code == 200
+        assert isinstance(response.json, list)
+        assert len(response.json) == 0

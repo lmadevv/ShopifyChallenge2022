@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
@@ -61,3 +61,13 @@ def deleteInventoryItem(itemid):
     db.session.commit()
 
     return EMPTY_RESPONSE
+
+@app.route("/getinventory")
+def getItems():
+    items = InventoryItem.query.all()
+    output = []
+
+    for item in items:
+        output.append(item.id)
+
+    return jsonify(output)
