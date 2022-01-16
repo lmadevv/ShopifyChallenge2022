@@ -117,7 +117,9 @@ class GetInventoryItems(BaseTestCase):
         assert response.status_code == 200
         assert isinstance(response.json, list)
         assert len(response.json) == 1
-        assert 1 == response.json[0]
+        assert response.json[0]["id"] == 1
+        assert response.json[0]["name"] == "Kleenex"
+        assert response.json[0]["description"] == "Tissues for people"
 
     def testGetUnpopulatedItems(self):
         response = self.client.get("/getinventory")
