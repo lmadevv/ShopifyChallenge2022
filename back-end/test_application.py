@@ -31,7 +31,7 @@ class BaseTestCase(TestCase):
 
 class AddInventoryItem(BaseTestCase):
     def testValidInventoryAdd(self):
-        response = self.client.post("/create", json=dict(name="Kleenex", description="Tissues for people"))
+        response = self.client.post("/createinventory", json=dict(name="Kleenex", description="Tissues for people"))
 
         assert response.status_code == 200
         assert response.json["id"] == 1
@@ -42,19 +42,19 @@ class AddInventoryItem(BaseTestCase):
         assert inventoryItem.description == "Tissues for people"
 
     def testNameNotIncluded(self):
-        response = self.client.post("/create", json=dict(description="Tissues for people"))
+        response = self.client.post("/createinventory", json=dict(description="Tissues for people"))
 
         assert response.status_code == 400
         assert response.json["status"] == "There was no item name given."
 
     def testNameFieldEmpty(self):
-        response = self.client.post("/create", json=dict(name="", description="Tissues for people"))
+        response = self.client.post("/createinventory", json=dict(name="", description="Tissues for people"))
 
         assert response.status_code == 400
         assert response.json["status"] == "The name field was empty."
 
     def testDescriptionNotIncluded(self):
-        response = self.client.post("/create", json=dict(name="Kleenex"))
+        response = self.client.post("/createinventory", json=dict(name="Kleenex"))
 
         assert response.status_code == 200
         assert response.json["id"] == 1

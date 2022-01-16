@@ -16,7 +16,7 @@ class InventoryItem(db.Model):
 def errorMessageWithCode(status, code):
     return {"status": status}, code
 
-@app.route("/create", methods=["POST"])
+@app.route("/createinventory", methods=["POST"])
 def createInventoryItem():
     if "name" not in request.json:
         return errorMessageWithCode("There was no item name given.", 400)
@@ -34,3 +34,4 @@ def createInventoryItem():
     db.session.commit()
 
     return {"id": item.id}
+
