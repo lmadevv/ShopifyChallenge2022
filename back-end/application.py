@@ -18,13 +18,16 @@ def errorMessageWithCode(status, code):
 
 @app.route("/create", methods=["POST"])
 def createInventoryItem():
-    name = request.json["name"]
-    description = request.json["description"]
-
-    if name is None or name == "":
-        return errorMessageWithCode(400, "There was no item name given.")
-    if description is None:
+    if "name" not in request.json:
+        return errorMessageWithCode("There was no item name given.", 400)
+    if "description" not in request.json:
         description = ""
+    else:
+        description = request.json["description"]
+
+    name = request.json["name"]
+    if name == "":
+        return errorMessageWithCode("The name field was empty.", 400)
 
     item = InventoryItem(name=name, description=description)
     db.session.add(item)
