@@ -63,3 +63,26 @@ class AddInventoryItem(BaseTestCase):
 
         assert inventoryItem.name == "Kleenex"
         assert inventoryItem.description == ""
+
+class EditInventoryItem(BaseTestCase):
+    def testEditValidNameAndDescription(self):
+        db.session.add(self.createInventory())
+        db.session.commit()
+
+        response = self.client.put("/editinventory/1", json=dict(name="Toilet Paper", description="To wipe"))
+
+        assert response.status_code == 200
+
+        item = InventoryItem.query.get(1)
+
+        assert item.name == "Toilet Paper"
+        assert item.description == "To wipe"
+
+    def testEditInvalidName(self):
+        db.session.add(self.createInventory())
+        db.session.commit()
+
+        response = self.client.put("/editinventory/1", json=dict(name="", description="To wipe"))
+
+        assert response.status_code == 400
+        assert response.json["status"] == "Please fill in name field if you plan to change it."

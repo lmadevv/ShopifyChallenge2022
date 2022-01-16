@@ -5,6 +5,8 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 db = SQLAlchemy(app)
 
+EMPTY_RESPONSE = ""     # this is used for a successful action but there's no need to return anything
+
 class InventoryItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
@@ -35,3 +37,18 @@ def createInventoryItem():
 
     return {"id": item.id}
 
+@app.route("/editinventory/<itemid>", methods=["PUT"])
+def editInventoryItem(itemid):
+    item = InventoryItem.query.get(itemid)
+
+    if "name" in request.json:
+        if request.json["name"] != "":
+            item.name = request.json["name"]
+        else:
+            return errorMessageWithCode("Please fill in name field if you plan to change it.", 400)
+
+    if "description" in request.json:
+        item.description = request.json["description"]
+
+    db.session.commit()
+    return EMPTY_RESPONSE
