@@ -52,3 +52,12 @@ def editInventoryItem(itemid):
 
     db.session.commit()
     return EMPTY_RESPONSE
+
+@app.route("/deleteinventory/<itemid>", methods=["DELETE"])
+def deleteInventoryItem(itemid):
+    item = InventoryItem.query.get_or_404(itemid)
+
+    db.session.delete(item)
+    db.session.commit()
+
+    return EMPTY_RESPONSE

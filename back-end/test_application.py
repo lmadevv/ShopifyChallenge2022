@@ -91,3 +91,18 @@ class EditInventoryItem(BaseTestCase):
         response = self.client.put("/editinventory/1", json=dict(name="Toilet Paper", description="To wipe"))
 
         assert response.status_code == 404
+
+class DeleteInventoryItem(BaseTestCase):
+    def testDeleteValidItem(self):
+        db.session.add(self.createInventory())
+        db.session.commit()
+
+        response = self.client.delete("/deleteinventory/1")
+
+        assert response.status_code == 200
+        assert self.client.delete("/deleteinventory/1").status_code == 404
+
+    def testDeleteInvalidItem(self):
+        response = self.client.delete("/deleteinventory/1")
+
+        assert response.status_code == 404
