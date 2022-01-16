@@ -68,6 +68,8 @@ def getItems():
     output = []
 
     for item in items:
-        output.append(item.id)
+        output.append({"id": item.id, "name": item.name, "description": item.description})
 
-    return jsonify(output)
+    response = jsonify(output)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
