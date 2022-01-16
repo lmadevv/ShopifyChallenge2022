@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="exportData()">Export Data</button>
+<p id="itemList"></p>
+
+<p>To add: You need name. Description optional</p>
+<p>To edit: You name and/or description filled</p>
+<p>To delete: You need ID (found in table)</p>
+<button onclick="createInventoryItem()">Add Item</button>
+<button onclick="editInventoryItem()">Edit Item</button>
+<button onclick="deleteInventoryItem()">Delete Item</button>
+<p id="warningText"></p>
+<input type="text" placeholder="Type the ID" id="idInput">
+<input type="text" placeholder="Type the name" id="nameInput">
+<input type="text" placeholder="Type the description" id="descriptionInput">
+<input type="text" placeholder="Type the amount" id="amountInput">
+
+
+<script src="functions_src.js">
+</script>
+
+</body>
+</html>
