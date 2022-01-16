@@ -27,11 +27,11 @@ class BaseTestCase(TestCase):
         db.drop_all()
 
     def createInventory(self):
-        return InventoryItem(name="Kleenex", description="Tissues for people")
+        return InventoryItem(name="Kleenex", description="Tissues for people", amount=50)
 
 class AddInventoryItem(BaseTestCase):
     def testValidInventoryAdd(self):
-        response = self.client.post("/createinventory", json=dict(name="Kleenex", description="Tissues for people"))
+        response = self.client.post("/createinventory", json=dict(name="Kleenex", description="Tissues for people", amount=50))
 
         assert response.status_code == 200
         assert response.json["id"] == 1
@@ -40,6 +40,7 @@ class AddInventoryItem(BaseTestCase):
 
         assert inventoryItem.name == "Kleenex"
         assert inventoryItem.description == "Tissues for people"
+        assert inventoryItem.amount == 50
 
     def testNameNotIncluded(self):
         response = self.client.post("/createinventory", json=dict(description="Tissues for people"))
@@ -48,13 +49,13 @@ class AddInventoryItem(BaseTestCase):
         assert response.json["status"] == "There was no item name given."
 
     def testNameFieldEmpty(self):
-        response = self.client.post("/createinventory", json=dict(name="", description="Tissues for people"))
+        response = self.client.post("/createinventory", json=dict(name="", description="Tissues for people", amount=50))
 
         assert response.status_code == 400
         assert response.json["status"] == "The name field was empty."
 
     def testDescriptionNotIncluded(self):
-        response = self.client.post("/createinventory", json=dict(name="Kleenex"))
+        response = self.client.post("/createinventory", json=dict(name="Kleenex", amount=50))
 
         assert response.status_code == 200
         assert response.json["id"] == 1
@@ -64,12 +65,18 @@ class AddInventoryItem(BaseTestCase):
         assert inventoryItem.name == "Kleenex"
         assert inventoryItem.description == ""
 
+    def testNoAmountIncluded(self):
+        response = self.client.post("/createinventory", json=dict(name="Kleenex"))
+
+        assert response.status_code == 400
+        assert response.json["status"] == "There was no amount given."
+
 class EditInventoryItem(BaseTestCase):
-    def testEditValidNameAndDescription(self):
+    def testEditValidNameAndDescriptionAndAmount(self):
         db.session.add(self.createInventory())
         db.session.commit()
 
-        response = self.client.put("/editinventory/1", json=dict(name="Toilet Paper", description="To wipe"))
+        response = self.client.put("/editinventory/1", json=dict(name="Toilet Paper", description="To wipe", amount=1))
 
         assert response.status_code == 200
 
@@ -77,6 +84,7 @@ class EditInventoryItem(BaseTestCase):
 
         assert item.name == "Toilet Paper"
         assert item.description == "To wipe"
+        assert item.amount == 1
 
     def testEditInvalidName(self):
         db.session.add(self.createInventory())
@@ -120,6 +128,7 @@ class GetInventoryItems(BaseTestCase):
         assert response.json[0]["id"] == 1
         assert response.json[0]["name"] == "Kleenex"
         assert response.json[0]["description"] == "Tissues for people"
+        assert response.json[0]["amount"] == 50
 
     def testGetUnpopulatedItems(self):
         response = self.client.get("/getinventory")

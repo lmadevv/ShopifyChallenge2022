@@ -14,6 +14,7 @@ class InventoryItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     description = db.Column(db.String(120))
+    amount = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return f"{self.name}: {self.description}"
@@ -30,12 +31,14 @@ def createInventoryItem():
         description = ""
     else:
         description = request.json["description"]
+    if "amount" not in request.json:
+        return errorMessageWithCode("There was no amount given.", 400)
 
     name = request.json["name"]
     if name == "":
         return errorMessageWithCode("The name field was empty.", 400)
 
-    item = InventoryItem(name=name, description=description)
+    item = InventoryItem(name=name, description=description, amount=request.json["amount"])
     db.session.add(item)
     db.session.commit()
 
@@ -55,6 +58,9 @@ def editInventoryItem(itemid):
     if "description" in request.json:
         item.description = request.json["description"]
 
+    if "amount" in request.json:
+        item.amount = request.json["amount"]
+
     db.session.commit()
     return EMPTY_RESPONSE
 
@@ -73,7 +79,7 @@ def getItems():
     output = []
 
     for item in items:
-        output.append({"id": item.id, "name": item.name, "description": item.description})
+        output.append({"id": item.id, "name": item.name, "description": item.description, "amount": item.amount})
 
     response = jsonify(output)
     return response
